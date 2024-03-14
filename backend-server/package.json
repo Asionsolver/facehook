@@ -1,7 +1,7 @@
 {
   "name": "backend-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Install All the packages",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon main.js"
@@ -24,5 +24,6 @@
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-plugin-node": "^11.1.0"
-  }
+  },
+  "keywords": []
 }

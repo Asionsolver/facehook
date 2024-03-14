@@ -1,24 +1,50 @@
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import Field from "../common/Field";
 import useAuth from "../../hooks/useAuth";
-
+import Field from "../common/Field";
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const {setAuth} = useAuth();
+  const { setAuth } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm();
 
-  const submitForm = (data) => {
-    console.log(data);
-    const user = {...data}
-    setAuth({user});
-    navigate("/");
+  const submitForm = async (formData) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER_BASE_URL}/auth/login`,
+        formData
+      );
+
+      if (response.status === 200) {
+        const { token, user } = response.data;
+        if (token) {
+          const authTokens = token.token;
+          const refreshToken = token.refreshToken;
+
+          console.log(
+            ` authTokens: ${authTokens} refreshToken: ${refreshToken}`
+          );
+
+          setAuth({ user, authTokens, refreshToken});
+          navigate("/");
+        }
+      }
+
+      // const user = {...formData}
+    } catch (error) {
+      console.error(error);
+      setError("root.random",{
+        type: "random",
+        message: `User with email: ${formData.email} does not exist. Please register first.`
+      })
+    }
   };
   return (
     <form
@@ -54,7 +80,7 @@ export default function LoginForm() {
           }`}
         />
       </Field>
-
+          <p>{errors?.root?.random?.message}</p>
       <Field>
         <button
           className="auth-input bg-lwsGreen font-bold text-deepDark transition-all hover:opacity-90"
